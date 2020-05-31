@@ -11,7 +11,6 @@ exports.validateToken = function (req, res, next) {
                 err.statusCode = 401;
                 return next(err);
             } else {
-                err.route = 'POST:api/adminUser';
                 return next(err);
             }
         }

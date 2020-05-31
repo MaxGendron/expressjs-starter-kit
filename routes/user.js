@@ -3,54 +3,46 @@ var jwt = require('jsonwebtoken');
 let router = express.Router();
 let authUtil = require('../utils/auth-util');
 let errorUtil = require('../utils/error-util');
-let jwtUtil = require('../utils/jwt-util');
-let ObjectId = require('mongodb').ObjectID;
 
-// Insert an admin user
-router.post('/', jwtUtil.validateToken, function (req, res, next) {
+// Insert a user
+router.post('/', function (req, res, next) {
+    const url = req.method + req.originalUrl;
+    //Verify input
     if (!req.body.username) {
-        return next(errorUtil.BadRequest('Undefined parameter: username', 'POST:api/adminUser', 'UndefinedParameter'));
+        return next(errorUtil.BadRequest('Undefined parameter: username', url, 'UndefinedParameter'));
     }
     if (!req.body.password) {
-        return next(errorUtil.BadRequest('Undefined parameter: password', 'POST:api/adminUser', 'UndefinedParameter'));
-    }
-    if (!req.body.employeeId) {
-        return next(errorUtil.BadRequest('Undefined parameter: employeeId', 'POST:api/adminUser', 'UndefinedParameter'));
-    }
-    if (!ObjectId.isValid(req.body.employeeId)) {
-        return next(errorUtil.BadRequest('The given employeeId is not an mongodb ObjectId: ' + req.body.employeeId, 'GET:api/appointment/month', 'InvalidObjectId'));
+        return next(errorUtil.BadRequest('Undefined parameter: password', url, 'UndefinedParameter'));
     }
 
     const db = req.app.locals.db;
     const username = req.body.username;
     const password = req.body.password;
-    const employeeId = new ObjectId(req.body.employeeId);
+    //Crypt the password
     authUtil.cryptPassword(password, function (err, hash) {
         if (err) {
-            err.route = 'POST:api/adminUser';
+            err.url = url;
             return next(err);
         }
-        db.collection('AdminUser').countDocuments({
-            '$or': [
-                {username: username},
-                {employeeId: employeeId}
-            ]
+        //Check if the user already exist, if so return error
+        db.collection('User').countDocuments({
+            username: username
         }, { limit: 1 }, function (err, count) {
             if (err) {
-                err.route = 'POST:api/adminUser';
+                err.url = url;
                 return next(err);
             }
             if (count > 0) {
-                return next(errorUtil.BadRequest('Cannot Insert the requested user, verify your informations', 'POST:api/adminUser', 'CannotInsert'));
+                return next(errorUtil.BadRequest('Cannot Insert the requested user, verify your informations', url, 'CannotInsert'));
             }
 
-            db.collection('AdminUser').insertOne({
+            //If user don't exist, insert it
+            db.collection('User').insertOne({
                 username: username,
                 password: hash,
-                employeeId :employeeId
             }, function (err, docInserted) {
                 if (err) {
-                    err.route = 'POST:api/adminUser';
+                    err.url = url;
                     return next(err);
                 }
                 res.json({ "insertedCount": docInserted.insertedCount });
@@ -61,32 +53,39 @@ router.post('/', jwtUtil.validateToken, function (req, res, next) {
 
 //ValidateUser
 router.post('/validate', function (req, res, next) {
+    const url = req.method + req.originalUrl;
+    //Verify input
     if (!req.body.username) {
-        return next(errorUtil.BadRequest('Undefined parameter: username', 'POST:api/adminUser/validate', 'UndefinedParameter'));
+        return next(errorUtil.BadRequest('Undefined parameter: username', url, 'UndefinedParameter'));
     }
     if (!req.body.password) {
-        return next(errorUtil.BadRequest('Undefined parameter: password', 'POST:api/adminUser/validate', 'UndefinedParameter'));
+        return next(errorUtil.BadRequest('Undefined parameter: password', url, 'UndefinedParameter'));
     }
+
     const db = req.app.locals.db;
     const username = req.body.username;
     const password = req.body.password;
-    db.collection('AdminUser').findOne({ username: username }, function (err, doc) {
+    //Look for the associated doc in the DB
+    db.collection('User').findOne({ username: username }, function (err, doc) {
         if (err) {
-            err.route = 'POST:api/adminUser/validate';
+            err.url = url;
             return next(err);
         }
+        //Return error if no doc found
         if (doc === null) {
-            return next(errorUtil.NotFound('No user found for username: ' + username, 'POST:api/adminUser/validate'));
+            return next(errorUtil.NotFound('No user found for username: ' + username, url));
         } else {
+            //Compare given password to the db one
             authUtil.comparePassword(password, doc.password, function (err, isValid) {
                 if (err) {
-                    err.route = 'POST:api/adminUser/validate';
+                    err.url = url;
                     return next(err);
                 }
+                //If password match, sign a JWT token and return it with the found user
                 const secret = process.env.JWT_SECRET;
                 jwt.sign({ username: username, _id: doc._id }, secret, { algorithm: 'HS512', expiresIn: '24h', issuer: process.env.JWT_ISSUER }, function (err, token) {
                     if (err) {
-                        err.route = 'POST:api/adminUser/validate';
+                        err.url = url;
                         return next(err);
                     }
                     const user = {

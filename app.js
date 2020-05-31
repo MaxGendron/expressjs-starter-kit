@@ -10,6 +10,8 @@ require('dotenv').config();
 const MongoClient = require('mongodb').MongoClient;
 const uri = process.env.MONGOBD_STRING;
 const corsOptions = {
+    //Check if the origin is in the list of cors defined in the
+    //env, if so let it pass otherwise return a error
     origin: function (origin, callback) {
         if (process.env.CORS_ORIGIN.indexOf(origin) !== -1) {
             callback(null, true)
@@ -30,8 +32,10 @@ MongoClient.connect(uri, {
         console.log(err);
         return;
     }
-    app.locals.db = client.db('WMS');
+    app.locals.db = client.db('DBNAME');
     dbClient = client;
+
+    //Set the port and listen to it
     var port = normalizePort(process.env.PORT || '3000');
     app.set('port', port);
     var server = http.createServer(app);
@@ -44,19 +48,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
 
 // Routes
-let appointmentRouter = require('./routes/appointment');
-let adminUserRouter = require('./routes/admin-user');
-let clientRouter = require('./routes/client');
-let employeeRouter = require('./routes/employee');
+let userRoute = require('./routes/user');
 
-app.use('/api/appointment', appointmentRouter);
-app.use('/api/adminUser', adminUserRouter);
-app.use('/api/client', clientRouter);
-app.use('/api/employee', employeeRouter);
+app.use('/api/user', userRoute);
 
 // Error Handler
 app.use(function(err, req, res, next) {
@@ -65,11 +61,14 @@ app.use(function(err, req, res, next) {
     } else {
         console.log('An error as occurred.');
     }
+
     console.log(err);
+
     let statusCode = err.statusCode ? err.statusCode : 500;
     res.status(statusCode).send(err);
 });
 
+//Close the db connection on exit
 process.on('SIGINT', () => {
     dbClient.close();
     process.exit();
