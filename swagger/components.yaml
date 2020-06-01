@@ -1,4 +1,9 @@
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
   schemas:
     User:
       properties:
@@ -24,7 +29,7 @@ components:
           type: string
   responses:
     Default:
-      description: Error, see output for more info.
+      description: An Error as occured, see output for more information.
       content:
         application/json:
           schema:

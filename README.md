@@ -1,6 +1,6 @@
 # Expressjs-starter-kit
 
-Backend starter-kit
+Backend starter-kit for a mean STACK
 
 ## Content
 
@@ -35,7 +35,7 @@ Backend starter-kit
 - Rename the "DBNAME" in app.js to the name of your database
 - Create a .env file at the root level with the followings:
   - MONGOBD_STRING: string to connect to your mongoDB cluster
-  - CORS_ORIGIN: arrays of url autorized to access your backend
+  - CORS_ORIGIN: arrays of urls authorized to access your application
   - JWT_ISSUER: jwt issuer
   - JWT_SECRET: jwt secret
 

@@ -62,7 +62,6 @@ router.post('/', function (req, res, next) {
                 username: username,
                 password: hash,
             }, function (err, doc) {
-                console.log(err);
                 if (err) {
                     err.url = url;
                     return next(err);

@@ -22,6 +22,9 @@ const swaggerJSDocOptions = {
       },
       servers: [
         {url: `http://localhost:3000/api` }
+      ],
+      security: [
+          {ApiKeyAuth: []}
       ]
     },
     // Path to the API docs
