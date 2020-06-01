@@ -1,14 +1,39 @@
 let express = require('express');
-let path = require('path');
-let cookieParser = require('cookie-parser');
-let logger = require('morgan');
 let app = express();
-var http = require('http');
-let cors = require('cors');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const http = require('http');
+const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
 require('dotenv').config();
-
 const MongoClient = require('mongodb').MongoClient;
 const uri = process.env.MONGOBD_STRING;
+const port = process.env.PORT || '3000';
+
+//Swagger
+const swaggerJSDocOptions = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'ExpressJS-Starter-Kit', 
+        version: '1.0.0',
+        description: 'Starter kit of an express-js app'
+      },
+      servers: [
+        {url: `http://localhost:3000/api` }
+      ]
+    },
+    // Path to the API docs
+    apis: ['./swagger/*', './routes/*'],
+};
+const swaggerSpec = swaggerJSDoc(swaggerJSDocOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api-docs.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
+
 const corsOptions = {
     //Check if the origin is in the list of cors defined in the
     //env, if so let it pass otherwise return a error
@@ -36,7 +61,6 @@ MongoClient.connect(uri, {
     dbClient = client;
 
     //Set the port and listen to it
-    var port = normalizePort(process.env.PORT || '3000');
     app.set('port', port);
     var server = http.createServer(app);
     server.listen(port);
@@ -50,14 +74,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // Routes
-let userRoute = require('./routes/user');
-
-app.use('/api/user', userRoute);
+const basePath = '/api/';
+const userRoute = require('./routes/users');
+app.use(`${basePath}users` , userRoute);
 
 // Error Handler
 app.use(function(err, req, res, next) {
     if (err.route) {
-        console.log('Error when execution route "' + err.route + '".');
+        console.log(`Error when executing route ${err.route}.`);
     } else {
         console.log('An error as occurred.');
     }
@@ -73,16 +97,3 @@ process.on('SIGINT', () => {
     dbClient.close();
     process.exit();
 });
-
-function normalizePort(val) {
-    var port = parseInt(val, 10);
-    if (isNaN(port)) {
-        // named pipe
-        return val;
-    }
-    if (port >= 0) {
-        // port number
-        return port;
-    }
-    return false;
-}

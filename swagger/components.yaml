@@ -1,0 +1,31 @@
+components:
+  schemas:
+    User:
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+      required:  
+        - username
+        - password
+    Error:
+      description: Error returned from 4XX and 5XX error code.
+      properties:
+        statusCode:
+          type: integer
+        name:
+          type: string
+        message:
+          type: string
+        url:
+          type: string
+  responses:
+    Default:
+      description: Error, see output for more info.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

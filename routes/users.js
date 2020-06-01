@@ -4,7 +4,28 @@ let router = express.Router();
 let authUtil = require('../utils/auth-util');
 let errorUtil = require('../utils/error-util');
 
-// Insert a user
+/**
+ * @swagger
+ *
+ * /users:
+ *   post:
+ *     summary: Create User
+ *     description: Create a new User.
+ *     tags: [Users]
+ *     produces:
+ *        application/json
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: New user has been inserted.
+ *       default:
+ *          $ref: '#/components/responses/Default'
+ */
 router.post('/', function (req, res, next) {
     const url = req.method + req.originalUrl;
     //Verify input
@@ -33,25 +54,55 @@ router.post('/', function (req, res, next) {
                 return next(err);
             }
             if (count > 0) {
-                return next(errorUtil.BadRequest('Cannot Insert the requested user, verify your informations', url, 'CannotInsert'));
+                return next(errorUtil.BadRequest('Cannot Insert the requested user, verify your information', url, 'CannotInsert'));
             }
 
             //If user don't exist, insert it
             db.collection('User').insertOne({
                 username: username,
                 password: hash,
-            }, function (err, docInserted) {
+            }, function (err, doc) {
+                console.log(err);
                 if (err) {
                     err.url = url;
                     return next(err);
                 }
-                res.json({ "insertedCount": docInserted.insertedCount });
+                res.sendStatus(200);
             });
         });
     });
 });
 
-//ValidateUser
+/**
+ * @swagger
+ *
+ * /users/validate:
+ *   post:
+ *     summary: Validate a User
+ *     description: Validate that the given user is a user in the system.
+ *     tags: [Users]
+ *     produces:
+ *        application/json
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: User exist in the system.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 username:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *       default:
+ *          $ref: '#/components/responses/Default'
+ */
 router.post('/validate', function (req, res, next) {
     const url = req.method + req.originalUrl;
     //Verify input
@@ -90,7 +141,6 @@ router.post('/validate', function (req, res, next) {
                     }
                     const user = {
                         username: doc.username,
-                        employeeId: doc.employeeId,
                         token: token
                     }
                     res.json({ user: user, isValid: isValid });

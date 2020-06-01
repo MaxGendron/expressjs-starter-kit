@@ -1,5 +1,7 @@
 # Expressjs-starter-kit
 
+Backend starter-kit
+
 ## Content
 
 - ExpressJS
@@ -12,6 +14,8 @@
 - Nodemon
 - Jsonwebtoken
 - Bcrypt
+- Swagger-ui-express
+- Swagger-jsdoc
 
 ### Prebuild code
 
@@ -20,12 +24,15 @@
 - Error Handling with custom Error
 - Utility classes for Auth/Error
 - User route
+- Swagger Integration
 
 ## Initialize from this repo
 
 - Clone this repository
 - Replace the README.md name/content
+- Replace (if wanted) the swaggerJSDocOptions in app.js
 - Change the package.json/package-lock.json "name"
+- Rename the "DBNAME" in app.js to the name of your database
 - Create a .env file at the root level with the followings:
   - MONGOBD_STRING: string to connect to your mongoDB cluster
   - CORS_ORIGIN: arrays of url autorized to access your backend
@@ -34,4 +41,6 @@
 
 ## Run the server
 
-- npm start
+```sh
+npm start
+```
