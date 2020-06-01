@@ -29,6 +29,9 @@ Backend starter-kit for a MEAN stack app
 ## Initialize from this repo
 
 - Clone this repository
+- ```sh
+  npm install
+  ```
 - Replace the README.md name/content
 - Replace (if wanted) the swaggerJSDocOptions in app.js
 - Change the package.json/package-lock.json "name"
