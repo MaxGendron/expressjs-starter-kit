@@ -1,6 +1,6 @@
 # Expressjs-starter-kit
 
-Backend starter-kit for a mean STACK
+Backend starter-kit for a MEAN stack app
 
 ## Content
 
