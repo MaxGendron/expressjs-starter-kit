@@ -1,0 +1,42 @@
+/*
+CSS File to make Swagger-UI-Express more pleasant to the eyes
+Refer to https://www.npmjs.com/package/swagger-ui-express#custom-css-styles-from-url to know how to apply it
+*/
+.topbar {
+  display: none;
+}
+body {
+  background-color: #303030 !important;
+}
+.scheme-container,
+.opblock-section-header,
+.modal-ux,
+.model-container {
+  background-color: #424242 !important;
+}
+.swagger-ui,
+.title,
+p,
+.opblock-tag,
+.opblock-summary-path,
+.opblock-summary-description,
+h4,
+.btn,
+li,
+.response-col_status,
+td,
+.model-title,
+.model,
+h3,
+label {
+  color: #ffffff !important;
+}
+.opblock-tag {
+  background-color: #373737 !important;
+}
+.swagger-ui section.models {
+  border: 1px solid rgba(150, 150, 150, 0.3) !important;
+}
+.swagger-ui section.models.is-open h4 {
+  border-bottom: 1px solid rgba(150, 150, 150, 0.3) !important;
+}
