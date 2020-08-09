@@ -114,10 +114,10 @@ router.post('/', function (req, res, next) {
 /**
  * @swagger
  *
- * /users/validate:
+ * /users/login:
  *   post:
- *     summary: Validate a User
- *     description: Validate that the given username/password correspond to a user in the system.
+ *     summary: Login a user
+ *     description: Try to login the user by validating if he exist or not.
  *     tags: [Users]
  *     produces:
  *        application/json
@@ -152,7 +152,7 @@ router.post('/', function (req, res, next) {
  *       Default:
  *         $ref: '#/components/responses/Default'
  */
-router.post('/validate', function (req, res, next) {
+router.post('/login', function (req, res, next) {
   const url = req.method + req.originalUrl;
   const db = req.app.locals.db;
   const username = req.body.username;
