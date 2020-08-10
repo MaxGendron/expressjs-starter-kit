@@ -104,7 +104,7 @@ router.post('/', function (req, res, next) {
               username: username,
               token: token
             }
-            res.json({ user: user });
+            res.json(user);
           });
       });
     });
@@ -200,7 +200,7 @@ router.post('/login', function (req, res, next) {
               username: doc.username,
               token: token
             }
-            res.json({ user: user });
+            res.json(user);
           });
         } else {
           //If not valid return notFound
