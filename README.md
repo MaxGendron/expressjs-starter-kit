@@ -2,7 +2,7 @@
 
 Backend starter-kit for a MEAN stack app
 
-Disclaimer: This repo is no longer maintained, even though it may still be relevant. You can still use the [angular-starter-kit](https://github.com/MaxGendron/angular-starter-kit) with it, but you may need to change some stuff to make it work!
+**Disclaimer**: This repo is no longer maintained, even though it may still be relevant. You can still use the [angular-starter-kit](https://github.com/MaxGendron/angular-starter-kit) with it, but you may need to change some stuff to make it work!
 
 ## Content
 
